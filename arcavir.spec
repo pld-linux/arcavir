@@ -1,12 +1,9 @@
-#
-# Conditional build:
-%bcond_without	md5sum	# don't check md5sum for antivirus database (useful
 Summary:	An anti-virus utility for Unix
 Summary(pl):	Antywirusowe narzêdzie dla Uniksów
 Name:		arcacmd
 Version:	2.6
 Release:	1
-License:	This program will be for free till the end of year 2004 (see licence.txt)
+License:	see COPYING
 Group:		Applications
 Source0:	http://arcabit.pl/download/linux/%{name}-linux%{version}-bundle-20060731.tgz
 # Source0-md5:	ffc56e252fbb05b60fa80255140a81d8
@@ -26,10 +23,11 @@ Summary(pl):	Bazy antywirusowe arcavir
 Group:		Applications
 
 %description bases
+This package contains antivirus databases.
 
 %description bases -l pl
+Pakiet ten zawiera bazy antywirusowe.
 
-###
 %package updater
 Summary:	Arcavir Antivirus database updater
 Summary(pl):	Aktualizator baz antywirusowych arcavir
@@ -60,18 +58,24 @@ cd ..
 install arcacmdg.conf $RPM_BUILD_ROOT%{_sysconfdir}
 install arcacmdl.conf.template $RPM_BUILD_ROOT%{_sysconfdir}
 
+for f in lang/* bases/*; do
+	install $f $RPM_BUILD_ROOT%{_datadir}/%{name}
+done
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc
-%attr(755,root,root) %{_bindir}/arcacmd
+%doc files/docs/COPYING.*
+%{_mandir}/man1/*
+%{_datadir}/%{name}/pl_ascii.atr
+%attr(755,root,root) %{_bindir}/%{name}
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/arcacmdg.conf
 
 %files bases
 %defattr(644,root,root,755)
-#%verify(not md5 mtime size) %{_var}/lib/%{name}/mksbase?.dat
+%verify(not md5 mtime size) %{_datadir}/%{name}/abase?.dat
 
 %files updater
 %defattr(644,root,root,755)
