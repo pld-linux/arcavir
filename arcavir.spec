@@ -68,6 +68,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc files/docs/COPYING.*
+%dir %{_datadir}/%{name}
 %{_mandir}/man1/*
 %{_datadir}/%{name}/pl_ascii.atr
 %attr(755,root,root) %{_bindir}/%{name}
@@ -78,5 +79,7 @@ rm -rf $RPM_BUILD_ROOT
 %verify(not md5 mtime size) %{_datadir}/%{name}/abase?.dat
 
 %files updater
+%defattr(644,root,root,755)
+%dir %{_datadir}/%{name}
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_sbindir}/arcaupdate
