@@ -2,7 +2,7 @@ Summary:	An anti-virus utility for Unix
 Summary(pl):	Antywirusowe narzêdzie dla Uniksów
 Name:		arcacmd
 Version:	2.6
-Release:	1
+Release:	0.1
 License:	see COPYING
 Group:		Applications
 Source0:	http://arcabit.pl/download/linux/%{name}-linux%{version}-bundle-20060731.tgz
