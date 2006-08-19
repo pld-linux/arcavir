@@ -1,14 +1,19 @@
+# TODO:
+# - fix version information (2.6 is Linux version)
+# - move databases to /var/lib, fix paths in arcaupdate
+#
 Summary:	An anti-virus utility for Unix
-Summary(pl):	Antywirusowe narzêdzie dla Uniksów
+Summary(pl):	Narzêdzie antywirusowe dla Uniksów
 Name:		arcacmd
 Version:	2.6
 Release:	0.1
-License:	see COPYING
+License:	restricted or commercial (see COPYING* files)
 Group:		Applications
 Source0:	http://arcabit.pl/download/linux/%{name}-linux%{version}-bundle-20060731.tgz
 # Source0-md5:	ffc56e252fbb05b60fa80255140a81d8
 URL:		http://arcabit.pl/
-ExclusiveArch:	%{ix86} %{x8664}
+Requires:	libstdc++ >= 5:3.4
+ExclusiveArch:	%{ix86}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -21,6 +26,7 @@ Arcavir jest skanerem antywirusowym dla systemów uniksowych.
 Summary:	Arcavir Antivirus databases
 Summary(pl):	Bazy antywirusowe arcavir
 Group:		Applications
+Requires:	%{name} = %{version}-%{release}
 
 %description bases
 This package contains antivirus databases.
@@ -32,6 +38,7 @@ Pakiet ten zawiera bazy antywirusowe.
 Summary:	Arcavir Antivirus database updater
 Summary(pl):	Aktualizator baz antywirusowych arcavir
 Group:		Applications
+Requires:	%{name} = %{version}-%{release}
 Requires:	/usr/bin/wget
 Requires:	bc
 Requires:	coreutils
@@ -49,11 +56,11 @@ Pakiet ten zawiera aktualizator baz antywirusowych.
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_datadir}/arcacmd/bases/tmp,%{_bindir},%{_sbindir},%{_mandir}/man1,%{_sysconfdir}}
 
-cd files/
+cd files
 install arcacmd $RPM_BUILD_ROOT%{_bindir}
 install arcaupdate $RPM_BUILD_ROOT%{_sbindir}
 cd docs
-install arcacmd.1.gz $RPM_BUILD_ROOT%{_mandir}/man1
+gzip -dc arcacmd.1.gz >$RPM_BUILD_ROOT%{_mandir}/man1/arcacmd.1
 cd ..
 install arcacmdg.conf $RPM_BUILD_ROOT%{_sysconfdir}
 install arcacmdl.conf.template $RPM_BUILD_ROOT%{_sysconfdir}
@@ -67,19 +74,18 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc files/docs/COPYING.*
-%dir %{_datadir}/%{name}
-%{_mandir}/man1/*
-%{_datadir}/%{name}/pl_ascii.atr
+%lang(fr) %doc files/docs/COPYING.{commercial,free}.fr
+%lang(pl) %doc files/docs/COPYING.{commercial,free}.pl
 %attr(755,root,root) %{_bindir}/%{name}
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/arcacmdg.conf
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/pl_ascii.atr
+%{_mandir}/man1/*
 
 %files bases
 %defattr(644,root,root,755)
 %verify(not md5 mtime size) %{_datadir}/%{name}/abase?.dat
 
 %files updater
-%defattr(644,root,root,755)
-%dir %{_datadir}/%{name}
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_sbindir}/arcaupdate
