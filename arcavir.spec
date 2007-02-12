@@ -3,7 +3,7 @@
 # - move databases to /var/lib, fix paths in arcaupdate
 #
 Summary:	An anti-virus utility for Unix
-Summary(pl):	Narzêdzie antywirusowe dla Uniksów
+Summary(pl.UTF-8):   NarzÄ™dzie antywirusowe dla UniksÃ³w
 Name:		arcacmd
 Version:	2.6
 Release:	0.1
@@ -19,24 +19,24 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description
 Arcavir is anti-virus scanner for Unix.
 
-%description -l pl
-Arcavir jest skanerem antywirusowym dla systemów uniksowych.
+%description -l pl.UTF-8
+Arcavir jest skanerem antywirusowym dla systemÃ³w uniksowych.
 
 %package bases
 Summary:	Arcavir Antivirus databases
-Summary(pl):	Bazy antywirusowe arcavir
+Summary(pl.UTF-8):   Bazy antywirusowe arcavir
 Group:		Applications
 Requires:	%{name} = %{version}-%{release}
 
 %description bases
 This package contains antivirus databases.
 
-%description bases -l pl
+%description bases -l pl.UTF-8
 Pakiet ten zawiera bazy antywirusowe.
 
 %package updater
 Summary:	Arcavir Antivirus database updater
-Summary(pl):	Aktualizator baz antywirusowych arcavir
+Summary(pl.UTF-8):   Aktualizator baz antywirusowych arcavir
 Group:		Applications
 Requires:	%{name} = %{version}-%{release}
 Requires:	/usr/bin/wget
@@ -46,7 +46,7 @@ Requires:	coreutils
 %description updater
 This package contains antivirus databases updater.
 
-%description updater -l pl
+%description updater -l pl.UTF-8
 Pakiet ten zawiera aktualizator baz antywirusowych.
 
 %prep
