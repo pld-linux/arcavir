@@ -1,16 +1,15 @@
-# TODO:
-# - fix version information (2.6 is Linux version)
-# - move databases to /var/lib, fix paths in arcaupdate
-#
 Summary:	An anti-virus utility for Unix
 Summary(pl.UTF-8):	Narzędzie antywirusowe dla Uniksów
 Name:		arcacmd
-Version:	2.6
-Release:	0.1
+Version:	2009
+Release:	1
 License:	restricted or commercial (see COPYING* files)
 Group:		Applications
-Source0:	http://arcabit.pl/download/linux/%{name}-linux%{version}-bundle-20060731.tgz
-# Source0-md5:	ffc56e252fbb05b60fa80255140a81d8
+Source0:	http://bugtraq.arcabit.com/devel/arcavir2009-server/arcavir%{version}-server-linux-i386.tar.gz
+# Source0-md5:	28f20af0e39a7ebacbc1e798dd51ce69
+Source1:	arcavir.cron
+Patch0:		arcavir-bases-path.patch
+Patch1:		arcavir-init-chkconfig.patch
 URL:		http://arcabit.pl/
 Requires:	libstdc++ >= 5:3.4
 ExclusiveArch:	%{ix86}
@@ -21,18 +20,6 @@ Arcavir is anti-virus scanner for Unix.
 
 %description -l pl.UTF-8
 Arcavir jest skanerem antywirusowym dla systemów uniksowych.
-
-%package bases
-Summary:	Arcavir Antivirus databases
-Summary(pl.UTF-8):	Bazy antywirusowe arcavir
-Group:		Applications
-Requires:	%{name} = %{version}-%{release}
-
-%description bases
-This package contains antivirus databases.
-
-%description bases -l pl.UTF-8
-Pakiet ten zawiera bazy antywirusowe.
 
 %package updater
 Summary:	Arcavir Antivirus database updater
@@ -50,42 +37,68 @@ This package contains antivirus databases updater.
 Pakiet ten zawiera aktualizator baz antywirusowych.
 
 %prep
-%setup -q -n inst
+%setup -q -n arcavir%{version}-server
+tar xvf data.tar.gz
+
+%patch0 -p1
+%patch1 -p1
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_datadir}/arcacmd/bases/tmp,%{_bindir},%{_sbindir},%{_mandir}/man1,%{_sysconfdir}}
+install -d $RPM_BUILD_ROOT{%{_datadir}/arcabit/lang/cmd,%{_bindir},%{_sbindir},%{_mandir}/man{1,5,8},%{_sysconfdir}/rc.d/init.d,var/cache/arcabit/bases,var/spool/arcad,%{_libdir},%{_includedir}}
+install -d $RPM_BUILD_ROOT/var/lib/arcavir/bases $RPM_BUILD_ROOT%{_sysconfdir}/cron.d
 
-cd files
-install arcacmd $RPM_BUILD_ROOT%{_bindir}
-install arcaupdate $RPM_BUILD_ROOT%{_sbindir}
-cd docs
-gzip -dc arcacmd.1.gz >$RPM_BUILD_ROOT%{_mandir}/man1/arcacmd.1
-cd ..
-install arcacmdg.conf $RPM_BUILD_ROOT%{_sysconfdir}
-install arcacmdl.conf.template $RPM_BUILD_ROOT%{_sysconfdir}
-
-for f in lang/* bases/*; do
-	install $f $RPM_BUILD_ROOT%{_datadir}/%{name}
-done
+install usr/lib/lib*.so* $RPM_BUILD_ROOT%{_libdir}
+install usr/sbin/arcad $RPM_BUILD_ROOT%{_sbindir}
+install usr/bin/* $RPM_BUILD_ROOT%{_bindir}
+install usr/share/arcabit/uninstall-data $RPM_BUILD_ROOT%{_datadir}/arcabit
+install usr/share/arcabit/lang/cmd/* $RPM_BUILD_ROOT%{_datadir}/arcabit/lang/cmd/
+install usr/include/* $RPM_BUILD_ROOT%{_includedir}
+install etc/*.conf $RPM_BUILD_ROOT%{_sysconfdir}
+install etc/init.d/arcad $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d
+install usr/include/* $RPM_BUILD_ROOT%{_includedir}
+install usr/share/man/man1/* $RPM_BUILD_ROOT%{_mandir}/man1
+install usr/share/man/man5/* $RPM_BUILD_ROOT%{_mandir}/man5
+install usr/share/man/man8/* $RPM_BUILD_ROOT%{_mandir}/man8
+install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/arcavir
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 %files
 %defattr(644,root,root,755)
-%lang(fr) %doc files/docs/COPYING.{commercial,free}.fr
-%lang(pl) %doc files/docs/COPYING.{commercial,free}.pl
-%attr(755,root,root) %{_bindir}/%{name}
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/arcacmdg.conf
-%dir %{_datadir}/%{name}
-%{_datadir}/%{name}/pl_ascii.atr
+%attr(755,root,root) %{_libdir}/lib*.so*
+%attr(755,root,root) %{_sbindir}/arcad
+%attr(755,root,root) %{_bindir}/arcacompat
+%attr(755,root,root) %{_bindir}/arcad-scan
+%attr(755,root,root) %{_bindir}/arcacmd
+%doc %{_datadir}/arcabit/*
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/arcacmd-scanner.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/arcacmd.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/arcad.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/arcad-scanner.conf
+%config %{_sysconfdir}/arcacmd-default.conf
+%config %{_sysconfdir}/arcascanner-default.conf
+%attr(754,root,root) /etc/rc.d/init.d/arcad
+%{_includedir}/arcadapi.h
 %{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_mandir}/man8/*
+%attr(755,arcabit,arcabit) %dir /var/lib/arcavir
+%attr(755,arcabit,arcabit) %dir /var/lib/arcavir/bases
 
-%files bases
-%defattr(644,root,root,755)
-%verify(not md5 mtime size) %{_datadir}/%{name}/abase?.dat
+#%files bases
+#%defattr(644,root,root,755)
+#%verify(not md5 mtime size) %{_datadir}/%{name}/abase?.dat
 
 %files updater
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_sbindir}/arcaupdate
+%attr(755,root,root) %{_bindir}/arcaupdate
+/etc/cron.d/arcavir
+
+%pre
+%groupadd -g 238 arcabit
+%useradd -u 238 -d /tmp -s /bin/false -c "Arcavir Anti Virus Checker" -g arcabit arcabit
