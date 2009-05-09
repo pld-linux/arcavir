@@ -36,6 +36,19 @@ This package contains antivirus databases updater.
 %description updater -l pl.UTF-8
 Pakiet ten zawiera aktualizator baz antywirusowych.
 
+%package devel
+Summary:	arcavir - Development header files and libraries
+Summary(pl.UTF-8):	arcavir - Pliki nagłówkowe i biblioteki dla programistów
+Group:		Development/Libraries
+
+%description devel
+This package contains the development header files and libraries
+necessary to develop arcavir client applications.
+
+%description devel -l pl.UTF-8
+Pliki nagłówkowe i biblioteki konieczne do kompilacji aplikacji
+klienckich arcavir.
+
 %prep
 %setup -q -n arcavir%{version}-server
 tar xvf data.tar.gz
@@ -83,21 +96,20 @@ rm -rf $RPM_BUILD_ROOT
 %config %{_sysconfdir}/arcacmd-default.conf
 %config %{_sysconfdir}/arcascanner-default.conf
 %attr(754,root,root) /etc/rc.d/init.d/arcad
-%{_includedir}/arcadapi.h
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %attr(755,arcabit,arcabit) %dir /var/lib/arcavir
 %attr(755,arcabit,arcabit) %dir /var/lib/arcavir/bases
 
-#%files bases
-#%defattr(644,root,root,755)
-#%verify(not md5 mtime size) %{_datadir}/%{name}/abase?.dat
-
 %files updater
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/arcaupdate
 /etc/cron.d/arcavir
+
+%files devel
+%defattr(644,root,root,755)
+%{_includedir}/arcadapi.h
 
 %pre
 %groupadd -g 238 arcabit
