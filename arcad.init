@@ -1,0 +1,102 @@
+#!/bin/sh
+#
+# arcad		ArcaBit arcadaemon
+#
+# chkconfig:	345 60 40
+#
+# description:	ArcaBit arcadaemon
+#
+# processname:	arcad
+# config:	/etc/arcavir/arcad.conf
+# pidfile:	/var/run/arcad.pid
+#
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Get service config - may override defaults
+[ -f /etc/sysconfig/arcad ] && . /etc/sysconfig/arcad
+
+start() {
+	# Check if the service is already running?
+	if [ -f /var/lock/subsys/arcad ]; then
+		msg_already_running "ArcaBit Antivirus daemon"
+		return
+	fi
+
+	msg_starting "ArcaBit Antivirus daemon"
+	daemon /usr/sbin/arcad
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/arcad
+}
+
+stop() {
+	if [ ! -f /var/lock/subsys/arcad ]; then
+		msg_not_running "ArcaBit Antivirus daemon"
+		return
+	fi
+
+	# Stop daemons.
+	msg_stopping "ArcaBit Antivirus daemon"
+	killproc arcad
+	rm -f /var/lock/subsys/arcad
+}
+
+reload() {
+	if [ ! -f /var/lock/subsys/arcad ]; then
+		msg_not_running "ArcaBit Antivirus daemon"
+		RETVAL=7
+		return
+	fi
+
+	msg_reloading "ArcaBit Antivirus daemon"
+	killproc arcad -HUP
+	RETVAL=$?
+}
+
+condrestart() {
+	if [ ! -f /var/lock/subsys/arcad ]; then
+		msg_not_running "ArcaBit Antivirus daemon"
+		RETVAL=$1
+		return
+	fi
+
+	stop
+	start
+}
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	stop
+	start
+	;;
+  try-restart)
+	condrestart 0
+	;;
+# include force-reload here if program allows reloading without restart
+# otherwise remove reload action and support force-reload as restart if running
+  reload|force-reload)
+	reload
+	;;
+# use this one if program doesn't support reloading without restart
+  force-reload)
+	condrestart 7
+	;;
+  status)
+	status arcad
+	RETVAL=$?
+	;;
+  *)
+	msg_usage "$0 {start|stop|restart|try-restart|reload|force-reload|status}"
+	exit 3
+esac
+
+exit $RETVAL
