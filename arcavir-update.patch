@@ -1,0 +1,98 @@
+diff -ur arcavir2010/usr/bin/arcaupdate arcavir2010-update/usr/bin/arcaupdate
+--- arcavir2010/usr/bin/arcaupdate	2010-08-09 14:20:39.000000000 +0200
++++ arcavir2010-update/usr/bin/arcaupdate	2010-08-17 14:14:50.801594212 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ #
+ # ArcaVir 2010 Server update script.
+ # Copyright (C) 2009 ArcaBit sp. z o.o.
+@@ -10,18 +10,17 @@
+ 
+ . /usr/share/arcavir/functions || { echo 'Cannot load /usr/share/arcavir/functions!'; exit 1; }
+ 
+-# if ( set -o noclobber; echo "$$" > ${lockfile} ) 2>/dev/null; then
+-#        trap "${rm} -f ${lockfile}" int term exit
++if ( set -o noclobber; echo "$$" > ${lockfile} ) 2>/dev/null; then
++        trap "${rm} -f ${lockfile}" int term exit
+         ${get} "${repo}" || exit 1
+-        [ -x /etc/init.d/arcad ] && /etc/init.d/arcad stop
+-        ${propagate} "${repo}" "${dst}" || exit 1
++	cp -rp "${repo}"/bases/* "${dst}"/var/lib/arcavir/bases/
+ 	[ -x ${bt} ] && \
+-		${bt} "${dst}"var/lib/arcavir/bases/ "${dst}"var/lib/arcavir/bases/abasetr_bt.dat && \
+-		${chown} arcabit:arcabit "${dst}"var/lib/arcavir/bases/abasetr_bt.dat
+-        [ -x /etc/init.d/arcad ] && /etc/init.d/arcad start
+-#        ${rm} -f ${lockfile}
+-#else
+-#        die 'Cannot open lockfile'
+-#fi
++		${bt} "${dst}"var/lib/arcavir/bases/ "${dst}"var/lib/arcavir/bases/abasetr_bt.dat
++	chown -R arcabit:arcabit "${dst}"/var/lib/arcavir/bases/
++        /sbin/service arcad reload
++        ${rm} -f ${lockfile}
++else
++        die 'Cannot open lockfile'
++fi
+ 
+ exit 0
+diff -ur arcavir2010/usr/bin/arcaupdate-get arcavir2010-update/usr/bin/arcaupdate-get
+--- arcavir2010/usr/bin/arcaupdate-get	2010-08-09 14:20:39.000000000 +0200
++++ arcavir2010-update/usr/bin/arcaupdate-get	2010-08-17 14:13:35.729594210 +0200
+@@ -18,26 +18,6 @@
+ 
+ cache="$@"
+ 
+-rawos=$(${uname} -o)
+-rawmach=$(${uname} -m)
+-
+-os=
+-mach=
+-
+-[ "${rawos}" = 'GNU/Linux' ] && os='linux'
+-# xxx more to follow
+-
+-[ "${rawmach}" = 'i386' ] && mach='i386'
+-[ "${rawmach}" = 'i486' ] && mach='i386'
+-[ "${rawmach}" = 'i586' ] && mach='i386'
+-[ "${rawmach}" = 'i686' ] && mach='i386'
+-[ "${rawmach}" = 'x86_64' ] && mach='amd64'
+-
+-[ "${os}" = '' ] && die "Unknown system ${rawos}"
+-[ "${mach}" = '' ] && die "Unknown machine ${rawmach}"
+-
+-suffix=core/${os}-${mach}
+-
+ verifybasessig()
+ {
+ 	isprog "${gpg}"
+@@ -60,29 +40,6 @@
+ }
+ 
+ ${mkdir} -p ${cache}/bases || die 'mkdir failed'
+-${rsync} --no-motd -a rsync://${rsyncpath}/${suffix}/ "${cache}" 2> /dev/null
+-if [ $? -gt 0 ]; then
+-	echo 'arcaupdate-get: warning: rsync failed for core, falling back to http'
+-	${rm} -rf "${cache}/*" || die 'rm failed'
+-	cd "${cache}" || die 'cd failed'
+-	${wget} --quiet -N -P "${cache}" -np -nd -r -R 'index.html*' http://${httppath}/${suffix}/ || die 'wget failed'
+-	${rm} -f "${cache}/robots.txt"
+-fi
+-
+-isprog "${gpg}"
+-if [ $? -eq 0 ]; then
+-	${gpg} --no-default-keyring --keyring /var/lib/arcavir/pubring.gpg -q --batch -d < "${cache}/files.gpg" > "${cache}/files.txt" 2>/dev/null
+-	if [ $? -gt 0 ]; then
+-		${rm} -rf "${cache}/*"
+-		die 'GnuPG verify failed! Someone may be tampering with your repository.'
+-	fi
+-else
+-	log_warn 'arcaupdate-get: warning: GnuPG not found. We STRONGLY suggest that you '
+-	log_warn 'arcaupdate-get: warning: install it. Please see the apropriate section '
+-	log_warn 'arcaupdate-get: warning: in README for details.'
+-fi
+-
+-# to samo dla baz
+ 
+ tmpfile=/tmp/arcaupdate.tmp
+ 
