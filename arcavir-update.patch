@@ -96,3 +96,14 @@ diff -ur arcavir2010/usr/bin/arcaupdate-get arcavir2010-update/usr/bin/arcaupdat
  
  tmpfile=/tmp/arcaupdate.tmp
  
+--- arcavir2010-update/usr/share/arcavir/functions~	2010-08-09 14:20:39.000000000 +0200
++++ arcavir2010-update/usr/share/arcavir/functions	2010-08-18 11:06:41.569925597 +0200
+@@ -24,7 +24,7 @@
+ # Various other variables
+ repo=/var/cache/arcavir/update
+ dst=/
+-lockfile=/var/run/arcaupdate.lock
++lockfile=/var/cache/arcavir/update/arcaupdate.lock
+ 
+ rsyncpath=80.72.37.138/ArcaLinux2010
+ httppath=80.72.37.138/update/ArcaLinux2010
