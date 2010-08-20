@@ -12,7 +12,7 @@ Summary:	An anti-virus utility for Unix
 Summary(pl.UTF-8):	Narzędzie antywirusowe dla Uniksów
 Name:		arcavir
 Version:	2010
-Release:	0.2
+Release:	0.4
 License:	restricted or commercial (see URL)
 Group:		Applications
 Source0:	http://bugtraq.arcabit.com/arcavir2010/%{name}%{version}-linux-i386.tar.gz
@@ -130,9 +130,18 @@ rm -rf $RPM_BUILD_ROOT
 
 %pre
 %groupadd -g 238 arcabit
-%useradd -u 238 -d /var/lib/arcavir -s /bin/false -c "Arcavir Anti Virus Checker" -g arcabit arcabit
+%useradd -u 238 -d /var/lib/arcavir -s /bin/false -c "ArcaBit Anti Virus Checker" -g arcabit arcabit
 
-%post   -p /sbin/ldconfig
+%post
+/sbin/ldconfig
+/sbin/chkconfig --add arcad
+%service arcad restart "ArcaBit Antivirus daemon"
+
+%preun
+if [ "$1" = "0" ]; then
+	%service arcad stop
+	/sbin/chkconfig --del arcad
+fi
 
 %postun
 /sbin/ldconfig
