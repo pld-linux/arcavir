@@ -7,7 +7,7 @@ diff -ur arcavir2010/usr/bin/arcaupdate arcavir2010-update/usr/bin/arcaupdate
  #
  # ArcaVir 2010 Server update script.
  # Copyright (C) 2009 ArcaBit sp. z o.o.
-@@ -10,18 +10,17 @@
+@@ -10,18 +10,18 @@
  
  . /usr/share/arcavir/functions || { echo 'Cannot load /usr/share/arcavir/functions!'; exit 1; }
  
@@ -29,7 +29,8 @@ diff -ur arcavir2010/usr/bin/arcaupdate arcavir2010-update/usr/bin/arcaupdate
 -#fi
 +		${bt} "${dst}"var/lib/arcavir/bases/ "${dst}"var/lib/arcavir/bases/abasetr_bt.dat
 +	chown -R arcabit:arcabit "${dst}"/var/lib/arcavir/bases/
-+        /sbin/service arcad reload
++	read arcadpid 2>/dev/null </var/run/arcad.pid
++	[ -n "$arcadpid" ] && kill -HUP $arcadpid
 +        ${rm} -f ${lockfile}
 +else
 +        die 'Cannot open lockfile'
