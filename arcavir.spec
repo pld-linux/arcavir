@@ -121,7 +121,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %pre
 %groupadd -g 238 arcabit
-%useradd -u 238 -d /tmp -s /bin/false -c "Arcavir Anti Virus Checker" -g arcabit arcabit
+%useradd -u 238 -d /var/lib/arcavir -s /bin/false -c "Arcavir Anti Virus Checker" -g arcabit arcabit
 
 %post   -p /sbin/ldconfig
 
