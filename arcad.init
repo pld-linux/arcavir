@@ -81,14 +81,8 @@ case "$1" in
   try-restart)
 	condrestart 0
 	;;
-# include force-reload here if program allows reloading without restart
-# otherwise remove reload action and support force-reload as restart if running
   reload|force-reload)
 	reload
-	;;
-# use this one if program doesn't support reloading without restart
-  force-reload)
-	condrestart 7
 	;;
   status)
 	status arcad
