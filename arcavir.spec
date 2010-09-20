@@ -12,7 +12,7 @@ Summary:	An anti-virus utility for Unix
 Summary(pl.UTF-8):	Narzędzie antywirusowe dla Uniksów
 Name:		arcavir
 Version:	2010
-Release:	0.4
+Release:	1
 License:	restricted or commercial (see URL)
 Group:		Applications
 Source0:	http://bugtraq.arcabit.com/arcavir2010/%{name}%{version}-linux-i386.tar.gz
